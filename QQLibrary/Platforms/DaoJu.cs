@@ -155,8 +155,8 @@ namespace QQLibrary.Platforms
             resp = QQEntity.GetWebEntity().DownloadString(url + req);
             */
             //登陆test1
-            url = "https://djcapp.game.qq.com/daoju/v3/api/message/IMLogin.php?";
-            resp = QQEntity.GetWebEntity().DownloadString(url + req);
+            //url = "https://djcapp.game.qq.com/daoju/v3/api/message/IMLogin.php?";
+            //resp = QQEntity.GetWebEntity().DownloadString(url + req);
             //注册规则
             url = "https://djcapp.game.qq.com/daoju/v3/api/app/SignRewardRules.php?";
             resp = QQEntity.GetWebEntity().DownloadString(url + req);
@@ -179,8 +179,8 @@ namespace QQLibrary.Platforms
 
             #endregion
             //登陆test3 设置APP登陆状态
-            url = "https://djcapp.game.qq.com/daoju/v3/api/moment/uvs/UvsSign.php?";
-            resp = QQEntity.GetWebEntity().DownloadString(url + req);
+            //url = "https://djcapp.game.qq.com/daoju/v3/api/moment/uvs/UvsSign.php?";
+            //resp = QQEntity.GetWebEntity().DownloadString(url + req);
 
 
             foreach (var kv in mapLeiJi)

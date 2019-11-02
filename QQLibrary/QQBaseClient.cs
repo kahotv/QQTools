@@ -181,7 +181,7 @@ namespace QQLibrary
                 req += "&js_ver=" + QQBaseInfo.js_ver;
                 req += "&js_type=" + QQBaseInfo.js_type;
                 req += "&login_sig=" + cookies["pt_login_sig"].Value;
-                req += "&u1=http%3A%2F%2Fwww.qq.com%2Fqq2012%2FloginSuccess.htm";
+                req += "&u1=http://www.qq.com/qq2012/loginSuccess.htm";
                 req += "&r=0." + Guid.NewGuid().GetHashCode();
                 req += "&pt_uistyle=" + QQBaseInfo.pt_uistyle;
                 req += "&pt_jstoken=" + QQBaseInfo.pt_jstoken;
@@ -351,31 +351,66 @@ websig	ea3d6ee471dc0467410f73b5704e471d77539293d57c2042697648e6a7c291f459bcf5cf8
             try
             {
                 string resp = data.Replace("ptui_checkVC(", "").Replace(");", "").Replace(")","");
-                string[] arr_resp = resp.Split(new char[] { ',','\''}, StringSplitOptions.RemoveEmptyEntries);
-                if (arr_resp.Length != 5 && arr_resp.Length != 4)
+
+                string[] arr_resp = resp.Split(new char[] { ','}, StringSplitOptions.RemoveEmptyEntries);
+                if (arr_resp.Length != 6)
                     throw new Exception("获取验证码信息失败");
                 //解析出数据
-                int type = int.Parse(arr_resp[0]);
-                //type,验证码,QQ号hex,pt_verifysession,'2'
+                int type = int.Parse(arr_resp[0].Replace("'",""));
+                /*
+
+                function ptui_checkVC(_checkRet, _verifycode, _salt, _pt_verifysession, _isRandSalt, _ptdrvs) {
+                    switch (clearTimeout(pt.plogin.checkClock),
+                    pt.plogin.isRandSalt = _isRandSalt,
+                    pt.plogin.salt = _salt,
+                    pt.plogin.checkRet = _checkRet,
+                    pt.plogin.lastCheckAccount = pt.plogin.account,
+                    pt.plogin.ptdrvs = _ptdrvs || "",
+                    "2" == _checkRet ? pt.plogin.loginState == pt.LoginState.PLogin && pt.plogin.show_err(pt.str.inv_uin) : "3" == _checkRet || pt.plogin.hasSubmit,
+                    _checkRet + "") {
+                    case "0":
+                    case "2":
+                    case "3":
+                        pt.plogin.hideVC(),
+                        "1" == pt.ptui.pt_vcode_v1 && (pt.plogin.needShowNewVc = !1),
+                        $("verifycode").value = _verifycode || "abcd",
+                        pt.plogin.needVc = !1,
+                        $.report.monitor("330321", .05),
+                        _verifycode || $.report.nlog("check no code return,ret=" + _checkRet + ",code=" + e + ",uin=" + $.str.bin2String(_salt));
+                        break;
+                    case "1":
+                        pt.plogin.cap_cd = _verifycode,
+                        "1" == pt.ptui.pt_vcode_v1 ? pt.plogin.needShowNewVc = !0 : (pt.plogin.showVC(),
+                        $.css.show($("vc_tips"))),
+                        pt.plogin.needVc = !0,
+                        $.report.monitor("330320", .05)
+                    }
+                    1 == pt.ptui.pt_vcode_v1 && 1 == _checkRet || (pt.plogin.pt_verifysession = _pt_verifysession),
+                    pt.plogin.hasCheck(!0),
+                    pt.plogin.checkTime = (new Date).getTime(),
+                    pt.plogin.check.cb && pt.plogin.check.cb()
+                }
+
+                */
                 if (type == 0)
                 {
                     //不需要验证码
-                    //ptui_checkVC('0','!DCK','\x00\x00\x00\x00\x2f\x39\x1f\x85','5966d7b911a32b216f0279563b2e33341ea9fef89ffdad67401810bc3482f5729108902da455e041c08f23880d90b9082e99793144190df2','2');
-                    VCode = arr_resp[1];
-                    QQHexString = arr_resp[2];
-                    PTVFSession = arr_resp[3];
+                    //ptui_checkVC('0','!DCK','\x00\x00\x00\x00\x2f\x39\x1f\x85','5966d7b911a32b216f0279563b2e33341ea9fef89ffdad67401810bc3482f5729108902da455e041c08f23880d90b9082e99793144190df2','2','');
+                    VCode = arr_resp[1].Replace("'","");
+                    QQHexString = arr_resp[2].Replace("'", "");
+                    PTVFSession = arr_resp[3].Replace("'", "");
                     need_vcode = false;
                 }
                 else if(type == 1)
                 {
                     //需要验证码
                     //ptui_checkVC('1','uV1OTkYgX6MkAX_jwRLCYH3v5IhiSWiPJthHuYw_kpaJh5g1MV_ieQ**','\x00\x00\x00\x00\x03\x07\x2a\x79','','2');
-                    QQHexString = arr_resp[2];
+                    QQHexString = arr_resp[2].Replace("'", "");
                     PTVFSession = "";
                     int max_err = 3;    //尝试三次
                     while(max_err-- > 0)
                     {
-                        VCode = GetVCode(arr_resp[1]);
+                        VCode = GetVCode(arr_resp[1].Replace("'", ""));
                         if (!string.IsNullOrWhiteSpace(VCode))
                             break;
                     }
